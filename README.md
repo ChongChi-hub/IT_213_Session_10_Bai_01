@@ -4,10 +4,10 @@
 
 | Tiêu chí | Phương án A (PostgreSQL Only) | Phương án B (PostgreSQL + ClickHouse) | Phương án C (External PostgreSQL) |
 |---|---|---|---|
-| **Bảo mật dữ liệu** | ⚠️ Trung bình — Dữ liệu nằm trong Docker container, dễ mất nếu container bị xóa | ⚠️ Trung bình — Tương tự PA, hai database đều nằm trong Docker network | ✅ **Tốt nhất** — Dữ liệu nằm trên RDS/server vật lý bên ngoài, tách biệt hoàn toàn khỏi vòng đời container |
-| **Chi phí & Tài nguyên** | ✅ **Thấp nhất** — Chỉ chạy 1 container PostgreSQL, phù hợp local dev | ❌ **Cao nhất** — Chạy thêm ClickHouse (tốn thêm 2-4 GB RAM), phù hợp production lớn | ✅ Trung bình — Không tốn thêm RAM cho DB, nhưng cần trả phí RDS hoặc duy trì server |
-| **Độ phức tạp triển khai** | ✅ **Đơn giản nhất** — Ít cấu hình Docker Compose | ❌ **Phức tạp nhất** — Phải cấu hình cả PostgreSQL và ClickHouse, dễ xảy ra lỗi kết nối giữa 2 DB | ⚠️ Trung bình — Cần cấu hình biến môi trường kết nối External DB và đảm bảo network rules đúng |
-| **Backup & Recovery** | ❌ **Kém nhất** — Không có tầng Backup riêng biệt, chỉ có thể dùng `pg_dump` thủ công | ⚠️ Trung bình — Cần backup riêng cho cả 2 engine DB | ✅ **Tốt nhất** — Tận dụng cơ chế Automated Backup, Point-in-Time Recovery, Multi-AZ của AWS RDS |
+| **Bảo mật dữ liệu** | Trung bình — Dữ liệu nằm trong Docker container, dễ mất nếu container bị xóa | Trung bình — Tương tự PA, hai database đều nằm trong Docker network | **Tốt nhất** — Dữ liệu nằm trên RDS/server vật lý bên ngoài, tách biệt hoàn toàn khỏi vòng đời container |
+| **Chi phí & Tài nguyên** | **Thấp nhất** — Chỉ chạy 1 container PostgreSQL, phù hợp local dev | **Cao nhất** — Chạy thêm ClickHouse (tốn thêm 2-4 GB RAM), phù hợp production lớn | Trung bình — Không tốn thêm RAM cho DB, nhưng cần trả phí RDS hoặc duy trì server |
+| **Độ phức tạp triển khai** | **Đơn giản nhất** — Ít cấu hình Docker Compose | **Phức tạp nhất** — Phải cấu hình cả PostgreSQL và ClickHouse, dễ xảy ra lỗi kết nối giữa 2 DB | Trung bình — Cần cấu hình biến môi trường kết nối External DB và đảm bảo network rules đúng |
+| **Backup & Recovery** | **Kém nhất** — Không có tầng Backup riêng biệt, chỉ có thể dùng `pg_dump` thủ công | Trung bình — Cần backup riêng cho cả 2 engine DB | **Tốt nhất** — Tận dụng cơ chế Automated Backup, Point-in-Time Recovery, Multi-AZ của AWS RDS |
 | **Phù hợp môi trường** | Local / Development | Production lớn (scale-out analytics) | **Production chuẩn doanh nghiệp** |
 
 ## 2. Lựa chọn tối ưu: Phương án C
@@ -25,7 +25,7 @@
 ## 3. Nhược điểm của các phương án bị loại bỏ
 
 ### Phương án A bị loại vì:
-- **Rủi ro mất dữ liệu nghiêm trọng:** Nếu Docker volume bị xóa (thao tác `docker compose down -v`), toàn bộ trace lịch sử mất trắng, không thể audit giao dịch → vi phạm quy định lưu trữ log tối thiểu 5 năm của Ngân hàng Nhà nước.
+- **Rủi ro mất dữ liệu nghiêm trọng:** Nếu Docker volume bị xóa (thao tác `docker compose down -v`), toàn bộ trace lịch sử mất trắng, không thể audit giao dịch, vi phạm quy định lưu trữ log tối thiểu 5 năm của Ngân hàng Nhà nước.
 - Không có tầng bảo mật riêng biệt cho database trong môi trường production.
 
 ### Phương án B bị loại vì:
